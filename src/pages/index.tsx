@@ -1,5 +1,6 @@
 import { GetStaticProps } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { api } from '../services/api';
 import { convertSecondsToTimeString } from '../utils/convertSecondsToTimeString';
@@ -41,7 +42,9 @@ export default function Home({ latestEpisodes, previousEpisodes }: HomeProps) {
               />
 
               <div className={styles.episodeDetails}>
-                <a href="">{episode.title}</a>
+                <Link href={`/episodes/${episode.id}`}>
+                  <a>{episode.title}</a>
+                </Link>
                 <p>{episode.members}</p>
                 <span>{episode.publishedAt}</span>
                 <span>{episode.durationString}</span>
@@ -71,7 +74,7 @@ export default function Home({ latestEpisodes, previousEpisodes }: HomeProps) {
           </thead>
           <tbody>
           {previousEpisodes.map(episode => (
-            <tr>
+            <tr key={episode.id}>
               <td style={{ width: 72 }}>
                 <Image
                   width={120}
@@ -82,7 +85,9 @@ export default function Home({ latestEpisodes, previousEpisodes }: HomeProps) {
                 />
               </td>
               <td>
-                <a href="">{episode.title}</a>
+                <Link href={`/episodes/${episode.id}`}>
+                  <a>{episode.title}</a>
+                </Link>
               </td>
               <td>{episode.members}</td>
               <td style={{ width: 100 }}>{episode.publishedAt}</td>
