@@ -1,6 +1,20 @@
+import { useContext } from 'react';
+import Image from 'next/image';
+
+import { PlayerContext } from '../../contexts/PlayerContext';
+
 import styles from './styles.module.scss';
 
-export function Player () {
+export function Player() {
+  const {
+    episodeList,
+    currentEpisodeIndex,
+    isPlaying,
+    togglePlay,
+  } = useContext(PlayerContext);
+
+  const episode = episodeList[currentEpisodeIndex];
+
   return (
     <div className={styles.playerContainer}>
       <header>
@@ -8,11 +22,24 @@ export function Player () {
         <strong>Tocando agora</strong>
       </header>
 
-      <div className={styles.emptyPlayer}>
-        <strong>Selecione um podcast para ouvir</strong>
-      </div>
+      {episode ? (
+        <div className={styles.currentEpisode}>
+          <Image
+            width={592}
+            height={592}
+            src={episode.thumbnail}
+            objectFit="cover"
+          />
+          <strong>{episode.title}</strong>
+          <span>{episode.members}</span>
+        </div>
+      ) : (
+        <div className={styles.emptyPlayer}>
+          <strong>Selecione um podcast para ouvir</strong>
+        </div>
+      )}
 
-      <footer className={styles.empty}>
+      <footer className={!episode && styles.empty}>
         <div className={styles.progress}>
           <span>00:00</span>
           <div className={styles.slider}>
@@ -22,11 +49,17 @@ export function Player () {
         </div>
 
         <div className={styles.buttons}>
-          <button type="button"><img src="/shuffle.svg" alt="Aleatório"/></button>
-          <button type="button"><img src="/play-previous.svg" alt="Anterior"/></button>
-          <button type="button" className={styles.playButton}><img src="/play.svg" alt="Reproduzir"/></button>
-          <button type="button"><img src="/play-next.svg" alt="Próxima"/></button>
-          <button type="button"><img src="/repeat.svg" alt="Repetir"/></button>
+          <button type="button" disabled={!episode}><img src="/shuffle.svg" alt="Aleatório"/></button>
+          <button type="button" disabled={!episode}><img src="/play-previous.svg" alt="Anterior"/></button>
+          <button type="button" disabled={!episode} className={styles.playButton} onClick={() => togglePlay()}>
+            {isPlaying ? (
+              <img src="/pause.svg" alt="Pausar"/>
+            ) : (
+              <img src="/play.svg" alt="Reproduzir"/>
+            )}
+          </button>
+          <button type="button" disabled={!episode}><img src="/play-next.svg" alt="Próxima"/></button>
+          <button type="button" disabled={!episode}><img src="/repeat.svg" alt="Repetir"/></button>
         </div>
       </footer>
     </div>
