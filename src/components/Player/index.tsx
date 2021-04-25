@@ -1,17 +1,32 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import Slider from 'rc-slider';
 
 import { PlayerContext } from '../../contexts/PlayerContext';
 
+import 'rc-slider/assets/index.css'
 import styles from './styles.module.scss';
 
 export function Player() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+
   const {
     episodeList,
     currentEpisodeIndex,
     isPlaying,
+    setPlayingState,
     togglePlay,
   } = useContext(PlayerContext);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play();
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
 
   const episode = episodeList[currentEpisodeIndex];
 
@@ -32,6 +47,13 @@ export function Player() {
           />
           <strong>{episode.title}</strong>
           <span>{episode.members}</span>
+          <audio
+            src={episode.url}
+            ref={audioRef}
+            autoPlay
+            onPlay={() => setPlayingState(true)}
+            onPause={() => setPlayingState(false)}
+          />
         </div>
       ) : (
         <div className={styles.emptyPlayer}>
@@ -43,7 +65,15 @@ export function Player() {
         <div className={styles.progress}>
           <span>00:00</span>
           <div className={styles.slider}>
-            <div className={styles.emptySlider}/>
+            {episode ? (
+              <Slider
+                trackStyle={{ backgroundColor: '#84d361' }}
+                railStyle={{ backgroundColor: '#9f75ff' }}
+                handleStyle={{ backgroundColor: '#84d361', borderWidth: 4 }}
+              />
+            ) : (
+              <div className={styles.emptySlider}/>
+            )}
           </div>
           <span>00:00</span>
         </div>
